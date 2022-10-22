@@ -1,25 +1,9 @@
-import os
-import sys
-
-import time, pickle
+import time, pickle, os
 from abc import ABC, abstractmethod
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import multiprocessing as mp
 
-
-# options = webdriver.ChromeOptions()
-# options.add_argument('headless')
-# driver = webdriver.Chrome('chromedriver.exe', options=options)
-#
-# driver.start_client()
-# driver.get('https://coinmarketcap.com/en/exchanges/huobi-global/?type=spot')
-# time.sleep(3)
-# data = driver.find_elements(By.TAG_NAME, 'tr')
-# print(data[-1].text)
-
-
-# ?type=spot
 
 class scanner:
 	def __init__(self):
@@ -112,25 +96,7 @@ class Exchanges_Parser:
 			del self.data, options, driver
 
 
-# class huobi(exchange):
-# 	def __init__(self):
-# 		super().__init__()
-# 		self.link = 'https://coinmarketcap.com/en/exchanges/huobi-global/?type=spot'
-#
-# 	def parse(self):
-# 		super().parse()
-#
-#
-# class binance(exchange):
-# 	def __init__(self):
-# 		super().__init__()
-# 		self.link = 'https://coinmarketcap.com/en/exchanges/binance/?type=spot'
-#
-# 	def parse(self):
-# 		super().parse()
-
-
 if __name__ == '__main__':
-	if os.path.isdir('ExchangesData'):
+	if not os.path.isdir('ExchangesData'):
 		os.mkdir('ExchangesData')
 	scanner().worker()
