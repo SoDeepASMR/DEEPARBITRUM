@@ -3,7 +3,12 @@ from ex_parser import parser
 
 
 def time():
-	return f'{datetime.datetime.day}.{datetime.datetime.month}.{datetime.datetime.year} {datetime.datetime.hour}:{datetime.datetime.minute}:{datetime.datetime.second}'
+	return f'{datetime.datetime.now().day}.' \
+		   f'{datetime.datetime.now().month}.' \
+		   f'{datetime.datetime.now().year} ' \
+		   f'{datetime.datetime.now().hour}:' \
+		   f'{datetime.datetime.now().minute}:' \
+		   f'{datetime.datetime.now().second}'
 
 
 if __name__ == '__main__':

@@ -18,12 +18,12 @@ servers = {
 
 
 def NowTime():
-	return f'{datetime.datetime.day}.' \
-		   f'{datetime.datetime.month}.' \
-		   f'{datetime.datetime.year} ' \
-		   f'{datetime.datetime.hour}:' \
-		   f'{datetime.datetime.minute}:' \
-		   f'{datetime.datetime.second}'
+	return f'{datetime.datetime.now().day}.' \
+		   f'{datetime.datetime.now().month}.' \
+		   f'{datetime.datetime.now().year} ' \
+		   f'{datetime.datetime.now().hour}:' \
+		   f'{datetime.datetime.now().minute}:' \
+		   f'{datetime.datetime.now().second}'
 
 
 class PClient:
