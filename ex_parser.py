@@ -5,12 +5,11 @@ from selenium.webdriver.common.by import By
 import multiprocessing as mp
 
 
-class scanner:
-	def __init__(self):
-		with open('exchanges', 'rb') as ex:
-			self.links = pickle.load(ex)
+class parser:
+	def __init__(self, links):
+		self.links = links
 		
-		self.parser = Exchanges_Parser().parse
+		self.parser = ExchangeParser().parse
 	
 	def worker(self):
 		self.procs = []
@@ -62,12 +61,11 @@ class scanner:
 			pickle.dump(links, file)
 
 
-class Exchanges_Parser:
+class ExchangeParser:
 	def __init__(self):
 		# self.data = {'Pair': {'Price': None, 'Volume': None, 'Liq': None}}
 		self.data = []
 	
-	@abstractmethod
 	def parse(self, exchange: str, link: str):
 		options = webdriver.ChromeOptions()
 		options.add_argument('headless')
@@ -81,11 +79,8 @@ class Exchanges_Parser:
 			driver.get(link)
 			
 			self.data = [_.text.split('\n') for _ in driver.find_elements(By.TAG_NAME, 'tr')[1:]]
-			time.sleep(1)
 			
 		driver.close()
-		
-		# time.sleep(5)
 		
 		self.data = [[_[2], _[3], _[6], _[7]] for _ in self.data]
 		self.data = {Pair: {'Price': Price, 'Volume': Volume, 'Liq': Liq} for Pair, Price, Volume, Liq in self.data}
@@ -99,4 +94,4 @@ class Exchanges_Parser:
 if __name__ == '__main__':
 	if not os.path.isdir('ExchangesData'):
 		os.mkdir('ExchangesData')
-	scanner().worker()
+	parser().worker()
