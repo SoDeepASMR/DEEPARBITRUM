@@ -28,15 +28,33 @@ def worker():
 	size = len(raw_links)
 	client = PClient()
 	
-	const = math.ceil(size/len(servers))  # 13
+	const = math.ceil(size / len(servers))  # 13
 	count = 0
 	for ip, port in servers.items():
-		links = {ex: link for ex, link in raw_links[0 + (((const * count)) % size): (const * (count + 1)) if (((const * (count + 1)) + bool(count)) < size) else size]}
+		links = {ex: link for ex, link in raw_links[0 + ((const * count) % size): (const * (count + 1)) if (
+					((const * (count + 1)) + bool(count)) < size) else size]}
 		client.client(ip, port, links)
 		count += 1
 
 
 class PClient:
+	def __init__(self):
+		with open('exchanges', 'rb') as file:
+			self.raw_links = [[ex, link] for ex, link in pickle.load(file).items()]
+		
+		self.size = len(self.raw_links)
+		
+		self.const = math.ceil(self.size / len(servers))  # 13
+	
+	def worker(self):
+		count = 0
+		for ip, port in servers.items():
+			links = {ex: link for ex, link in
+					 self.raw_links[0 + ((self.const * count) % self.size): (self.const * (count + 1)) if (
+							 ((self.const * (count + 1)) + bool(count)) < self.size) else self.size]}
+			self.client(ip, port, links)
+			count += 1
+	
 	@staticmethod
 	def client(ip: str, port: int, links: dict):
 		sock = socket.socket()
@@ -62,5 +80,5 @@ class PClient:
 		print(f'{NowTime()} СОЕДИНЕНИЕ ЗАКРЫТО')
 
 
-if __name__=='__main__':
-	worker()
+if __name__ == '__main__':
+	PClient().worker()

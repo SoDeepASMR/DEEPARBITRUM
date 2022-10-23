@@ -1,5 +1,4 @@
 import time, pickle, os
-from abc import ABC, abstractmethod
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import multiprocessing as mp
@@ -7,12 +6,12 @@ import multiprocessing as mp
 
 class parser:
 	def __init__(self, links):
+		self.procs = []
 		self.links = links
 		
 		self.parser = ExchangeParser()
 	
 	def worker(self):
-		self.procs = []
 		for ex, link in self.links.items():
 			proc = mp.Process(target=self.parser.parse(), args=(ex, link,))
 			self.procs.append(proc)
