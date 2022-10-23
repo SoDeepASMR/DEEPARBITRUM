@@ -1,8 +1,8 @@
-import socket, os, datetime
+import socket, os, datetime, time
 from ex_parser import parser
 
 
-def time():
+def NowTime():
 	return f'{datetime.datetime.now().day}.' \
 		   f'{datetime.datetime.now().month}.' \
 		   f'{datetime.datetime.now().year} ' \
@@ -22,13 +22,17 @@ if __name__ == '__main__':
 	while True:
 		sock.listen(1)
 		
-		print(f'{time()} ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
+		print(f'{NowTime()} ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
 		conn, addr = sock.accept()
-		print(f'{time} СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
+		print(f'{NowTime()} СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
 		
 		data = {}
-		exec(f'''data = {conn.recv(10240).decode()}''')
-		print(f'{time()} ПОЛУЧЕНА DATA')
+		raw = None
+		while not raw:
+			raw = conn.recv(32768)
+		exec(f'''data = {raw.decode()}''')
+		print(data)
+		print(f'{NowTime()} ПОЛУЧЕНА DATA')
 		
 		scan = parser(data)
 		scan.worker()
@@ -36,12 +40,45 @@ if __name__ == '__main__':
 		objects = []
 		for (dirpath, dirnames, filenames) in os.walk('ExchangesData'):
 			objects.extend(filenames)
-			
-		for obj in objects:
-			with open(f'ExchangesData/{file}', 'r', encoding='utf-8') as file:
-				conn.send((obj + ' ' + file.read().strip('\n')).encode())
-				print(f'{time()} ОТПРАВЛЕНЫ КОТИРОВКИ {obj}')
 		
+		response = None
+		for obj in objects:
+			with open(f'ExchangesData/{obj}', 'r', encoding='utf-8') as file:
+				packet = (obj + '::' + file.read().strip('\n')).encode()
+				size = len(packet)
+				left = size
+				
+				count = 0  # [0 + ((2000 * count) % size): (2000 * (count + 1)) if (((2000 * (count + 1)) + bool(count)) < size) else size]
+				if size > 2900:
+					while True:
+						conn.send(packet[0 + ((2900 * count) % size): (2900 * (count + 1)) if (((2900 * (count + 1)) + bool(count)) < size) else size])
+						count += 1
+						left -= 2900
+						
+						while response != 'next':
+							response = conn.recv(128).decode()
+						response = None
+						
+						if left <= 0:
+							conn.send('over'.encode())
+							break
+				else:
+					conn.send(packet)
+					
+					while response != 'next':
+						response = conn.recv(128).decode()
+					response = None
+					
+					conn.send('over'.encode())
+				
+						
+				print(f'{NowTime()} ОТПРАВЛЕНЫ КОТИРОВКИ {obj}')
+				
+				while response != 'next':
+					response = conn.recv(128).decode()
+				response = None
+		
+		conn.send('end'.encode())
 		conn.close()
-		print(f'{time()} СОЕДИНЕНИЕ ЗАКРЫТО\n\n')
+		print(f'\n{NowTime()} СОЕДИНЕНИЕ ЗАКРЫТО\n\n')
 			

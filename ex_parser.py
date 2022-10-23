@@ -13,10 +13,9 @@ class parser:
 	
 	def worker(self):
 		for ex, link in self.links.items():
-			proc = mp.Process(target=self.parser.parse(), args=(ex, link,))
+			proc = mp.Process(target=self.parser.parse, args=(ex, link,))
 			self.procs.append(proc)
 			proc.start()
-			time.sleep(0.3)
 		
 		for proc in self.procs:
 			proc.join()
@@ -71,8 +70,6 @@ class ExchangeParser:
 		options.add_argument('--ignore-certificate-errors-spki-list')
 		options.add_experimental_option('excludeSwitches', ['enable-logging'])
 		driver = webdriver.Chrome('chromedriver.exe', chrome_options=options, service_log_path=None)
-		
-		print(exchange + '\n')
 		
 		while not self.data:
 			driver.get(link)
