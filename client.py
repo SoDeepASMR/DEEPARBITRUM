@@ -18,23 +18,12 @@ servers = {
 
 
 def NowTime():
-	return f'{datetime.datetime.day}.{datetime.datetime.month}.{datetime.datetime.year} {datetime.datetime.hour}:{datetime.datetime.minute}:{datetime.datetime.second}'
-
-
-def worker():
-	with open('exchanges', 'rb') as file:
-		raw_links = [[ex, link] for ex, link in pickle.load(file).items()]
-	
-	size = len(raw_links)
-	client = PClient()
-	
-	const = math.ceil(size / len(servers))  # 13
-	count = 0
-	for ip, port in servers.items():
-		links = {ex: link for ex, link in raw_links[0 + ((const * count) % size): (const * (count + 1)) if (
-					((const * (count + 1)) + bool(count)) < size) else size]}
-		client.client(ip, port, links)
-		count += 1
+	return f'{datetime.datetime.day}.' \
+		   f'{datetime.datetime.month}.' \
+		   f'{datetime.datetime.year} ' \
+		   f'{datetime.datetime.hour}:' \
+		   f'{datetime.datetime.minute}:' \
+		   f'{datetime.datetime.second}'
 
 
 class PClient:
