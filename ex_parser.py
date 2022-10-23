@@ -9,12 +9,12 @@ class parser:
 	def __init__(self, links):
 		self.links = links
 		
-		self.parser = ExchangeParser().parse
+		self.parser = ExchangeParser()
 	
 	def worker(self):
 		self.procs = []
 		for ex, link in self.links.items():
-			proc = mp.Process(target=self.parser, args=(ex, link,))
+			proc = mp.Process(target=self.parser.parse(), args=(ex, link,))
 			self.procs.append(proc)
 			proc.start()
 			time.sleep(0.3)
@@ -90,8 +90,8 @@ class ExchangeParser:
 			print(exchange + ' DONE!')
 			del self.data, options, driver
 
-
-if __name__ == '__main__':
-	if not os.path.isdir('ExchangesData'):
-		os.mkdir('ExchangesData')
-	parser().worker()
+#
+# if __name__ == '__main__':
+# 	if not os.path.isdir('ExchangesData'):
+# 		os.mkdir('ExchangesData')
+# 	parser().worker()
