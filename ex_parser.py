@@ -1,7 +1,17 @@
-import time, pickle, os
+import time, pickle, datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import multiprocessing as mp
+import colorlabels as cl
+
+
+def NowTime():
+	return f'{datetime.datetime.now().day}.' \
+		   f'{datetime.datetime.now().month}.' \
+		   f'{datetime.datetime.now().year} ' \
+		   f'{datetime.datetime.now().hour}:' \
+		   f'{datetime.datetime.now().minute}:' \
+		   f'{datetime.datetime.now().second}'
 
 
 class parser:
@@ -23,8 +33,9 @@ class parser:
 	@staticmethod
 	def get_exchanges():
 		options = webdriver.ChromeOptions()
-		options.add_argument('headless')
-		driver = webdriver.Chrome('chromedriver.exe', chrome_options=options)
+		options.add_argument('--headless')
+		options.add_argument('--no-sandbox')
+		driver = webdriver.Chrome('./chromedriver', chrome_options=options)
 		
 		driver.get('https://coinmarketcap.com/en/rankings/exchanges/')
 		
@@ -66,10 +77,11 @@ class ExchangeParser:
 	
 	def parse(self, exchange: str, link: str):
 		options = webdriver.ChromeOptions()
-		options.add_argument('headless')
+		options.add_argument('--headless')
+		options.add_argument('--no-sandbox')
 		options.add_argument('--ignore-certificate-errors-spki-list')
 		options.add_experimental_option('excludeSwitches', ['enable-logging'])
-		driver = webdriver.Chrome('chromedriver.exe', chrome_options=options, service_log_path=None)
+		driver = webdriver.Chrome('./chromedriver', chrome_options=options, service_log_path=None)
 		
 		while not self.data:
 			driver.get(link)
@@ -83,7 +95,7 @@ class ExchangeParser:
 		
 		with open(f'ExchangesData/{exchange}', 'w+') as file:
 			file.write(str(self.data))
-			print(exchange + ' DONE!')
+			print(f'{cl.BRIGHT_WHITE}{NowTime()}{cl.BRIGHT_MAGENTA} ' + exchange + ' DONE!')
 			del self.data, options, driver
 
 #

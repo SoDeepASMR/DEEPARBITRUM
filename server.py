@@ -1,5 +1,6 @@
 import socket, os, datetime, time
 from ex_parser import parser
+import colorlabels as cl
 
 
 def NowTime():
@@ -22,9 +23,9 @@ if __name__ == '__main__':
 	while True:
 		sock.listen(1)
 		
-		print(f'{NowTime()} ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
+		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
 		conn, addr = sock.accept()
-		print(f'{NowTime()} СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
+		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
 		
 		data = {}
 		raw = None
@@ -32,7 +33,7 @@ if __name__ == '__main__':
 			raw = conn.recv(32768)
 		exec(f'''data = {raw.decode()}''')
 		print(data)
-		print(f'{NowTime()} ПОЛУЧЕНА DATA')
+		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_MAGENTA}ПОЛУЧЕНА DATA')
 		
 		scan = parser(data)
 		scan.worker()
@@ -71,7 +72,7 @@ if __name__ == '__main__':
 					
 					conn.send('over'.encode())
 				
-				print(f'{NowTime()} ОТПРАВЛЕНЫ КОТИРОВКИ {obj}')
+				print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.GREEN}ОТПРАВЛЕНЫ КОТИРОВКИ {obj}')
 				
 				while response != 'next':
 					response = conn.recv(128).decode()
@@ -79,5 +80,5 @@ if __name__ == '__main__':
 		
 		conn.send('end'.encode())
 		conn.close()
-		print(f'\n{NowTime()} СОЕДИНЕНИЕ ЗАКРЫТО\n\n')
+		print(f'{cl.BRIGHT_WHITE}\n{NowTime()} {cl.RED}СОЕДИНЕНИЕ ЗАКРЫТО\n\n')
 			

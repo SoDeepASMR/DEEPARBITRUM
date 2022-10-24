@@ -1,5 +1,7 @@
 import socket, datetime, pickle, time, math
 import multiprocessing as mp
+import colorlabels as cl
+
 
 servers = {
 	'38.242.230.255': 35000,
@@ -57,10 +59,10 @@ def client(ip: str, port: int, links: dict):
 	sock = socket.socket()
 	
 	sock.connect((ip, port))
-	print(f'{NowTime()} СОЕДИНЕНИЕ С {ip}:{port} УСТАНОВЛЕНО')
+	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {ip}:{port} УСТАНОВЛЕНО')
 	
 	sock.send(str(links).encode())
-	print(f'{NowTime()} ТАРГЕТЫ ДЛЯ ПАРСИНГА ОТПРАВЛЕНЫ\n')
+	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ТАРГЕТЫ ДЛЯ ПАРСИНГА ОТПРАВЛЕНЫ\n')
 	
 	while True:
 		raw = None
@@ -84,38 +86,16 @@ def client(ip: str, port: int, links: dict):
 			raw = None
 	
 		raw_data = raw_data.decode().split('::')
-		print(f'{NowTime()} ПОЛУЧЕНЫ КОТИРОВКИ {raw_data[0]}')
+		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.GREEN}ПОЛУЧЕНЫ КОТИРОВКИ {raw_data[0]}')
 		
 		with open(f'ExchangesData/{raw_data[0]}', 'w+') as file:
 			file.write(raw_data[1])
-			print(f'{NowTime()} КОТИРОВКИ {raw_data[0]} СОХРАНЕНЫ\n\n')
+			print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_GREEN}КОТИРОВКИ {raw_data[0]} СОХРАНЕНЫ\n\n')
 		
 		sock.send('next'.encode())
 		
-		
-		
-		# raw = None
-		# while not raw:
-		# 	raw = sock.recv(2000)
-		#
-		# raw_data = raw.decode().split('::')
-		# print(f'{NowTime()} ПОЛУЧЕНЫ КОТИРОВКИ {raw_data[0]}')
-		#
-		# while raw_data:
-		# 	raw = None
-		# 	while not raw:
-		# 		raw = sock.recv(32768)
-		# 	raw_data = raw.decode().split(' ')
-		# 	print(f'{NowTime()} ПОЛУЧЕНЫ КОТИРОВКИ {raw_data[0]}')
-		#
-		# 	with open(f'ExchangesData/{raw_data[0]}', 'w+') as file:
-		# 		file.write(raw_data[1])
-		# 		print(f'{NowTime()} КОТИРОВКИ {raw_data[0]} СОХРАНЕНЫ\n\n')
-		#
-		# 	sock.send('next'.encode())
-		#
 	sock.close()
-	print(f'{NowTime()} СОЕДИНЕНИЕ ЗАКРЫТО')
+	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {ip} ЗАКРЫТО')
 
 
 if __name__ == '__main__':
