@@ -114,8 +114,8 @@ def client(ip: str, port: int, links: dict):
 		#
 		# 	sock.send('next'.encode())
 		#
-		sock.close()
-		print(f'{NowTime()} СОЕДИНЕНИЕ ЗАКРЫТО')
+	sock.close()
+	print(f'{NowTime()} СОЕДИНЕНИЕ ЗАКРЫТО')
 
 
 if __name__ == '__main__':

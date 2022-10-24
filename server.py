@@ -71,7 +71,6 @@ if __name__ == '__main__':
 					
 					conn.send('over'.encode())
 				
-						
 				print(f'{NowTime()} ОТПРАВЛЕНЫ КОТИРОВКИ {obj}')
 				
 				while response != 'next':
