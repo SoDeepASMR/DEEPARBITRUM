@@ -31,7 +31,7 @@ class parser:
 			proc.join()
 	
 	@staticmethod
-	def get_exchanges():
+	def update_exchanges():
 		options = webdriver.ChromeOptions()
 		options.add_argument('--headless')
 		options.add_argument('--no-sandbox')
@@ -53,16 +53,16 @@ class parser:
 		links = [[ex, link[0:25] + '/en' + link[25:] + '?type=spot'] for [ex, link] in links]
 		links = {ex: link for ex, link in links}
 		
-		links.update({'Uniswap (V3)': 'https://coinmarketcap.com/en/exchanges/uniswap-v3/?type=spot',
-					  'Curve Finance': 'https://coinmarketcap.com/en/exchanges/curve-finance/?type=spot',
-					  'Uniswap (V2)': 'https://coinmarketcap.com/en/exchanges/uniswap-v2/?type=spot',
-					  'DODO (Ethereum)': 'https://coinmarketcap.com/en/exchanges/dodo/?type=spot',
-					  'PancakeSwap (V2)': 'https://coinmarketcap.com/en/exchanges/pancakeswap-v2/?type=spot',
-					  'iZiSwap': 'https://coinmarketcap.com/en/exchanges/iziswap/?type=spot',
-					  'KLAYswap': 'https://coinmarketcap.com/en/exchanges/klayswap/?type=spot',
-					  'SushiSwap': 'https://coinmarketcap.com/en/exchanges/sushiswap/?type=spot',
-					  'Sun.io': 'https://coinmarketcap.com/en/exchanges/justswap/?type=spot',
-					  'Uniswap (V3-Polygon)': 'https://coinmarketcap.com/en/exchanges/uniswap-v3-polygon/?type=spot'})
+		links.update({
+			'Curve Finance': 'https://coinmarketcap.com/en/exchanges/curve-finance/?type=spot',
+			'Uniswap (V2)': 'https://coinmarketcap.com/en/exchanges/uniswap-v2/?type=spot',
+			'DODO (Ethereum)': 'https://coinmarketcap.com/en/exchanges/dodo/?type=spot',
+			'PancakeSwap (V2)': 'https://coinmarketcap.com/en/exchanges/pancakeswap-v2/?type=spot',
+			'iZiSwap': 'https://coinmarketcap.com/en/exchanges/iziswap/?type=spot',
+			'KLAYswap': 'https://coinmarketcap.com/en/exchanges/klayswap/?type=spot',
+			'SushiSwap': 'https://coinmarketcap.com/en/exchanges/sushiswap/?type=spot',
+			'Sun.io': 'https://coinmarketcap.com/en/exchanges/justswap/?type=spot'
+		})
 		
 		driver.close()
 		
@@ -98,8 +98,6 @@ class ExchangeParser:
 			print(f'{cl.BRIGHT_WHITE}{NowTime()}{cl.BRIGHT_MAGENTA} ' + exchange + ' DONE!')
 			del self.data, options, driver
 
-#
-# if __name__ == '__main__':
-# 	if not os.path.isdir('ExchangesData'):
-# 		os.mkdir('ExchangesData')
-# 	parser().worker()
+
+if __name__ == '__main__':
+	parser({}).update_exchanges()

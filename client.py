@@ -32,8 +32,8 @@ def NowTime():
 class PClient:
 	def __init__(self):
 		with open('exchanges', 'rb') as file:
-			self.raw_links = [[ex, link] for ex, link in pickle.load(file).items()]
-		
+			self.raw_links = [[ex.replace('|', ''), link] for ex, link in pickle.load(file).items()]
+
 		self.procs = []
 		
 		self.size = len(self.raw_links)
@@ -88,8 +88,8 @@ def client(ip: str, port: int, links: dict):
 		raw_data = raw_data.decode().split('::')
 		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.GREEN}ПОЛУЧЕНЫ КОТИРОВКИ {raw_data[0]}')
 		
-		with open(f'ExchangesData/{raw_data[0]}', 'w+') as file:
-			file.write(raw_data[1])
+		with open(f'ExchangesData/{raw_data[0].replace("|", "")}', 'w+') as file:
+			file.write(raw_data[1].replace(r'\u273a', '').replace('\u273a', ''))
 			print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_GREEN}КОТИРОВКИ {raw_data[0]} СОХРАНЕНЫ\n\n')
 		
 		sock.send('next'.encode())
