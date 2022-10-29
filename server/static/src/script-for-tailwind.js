@@ -73,7 +73,7 @@ let data = [];
 let updateDate = "";
 
 // Вариант 1
-function getData(action = "defaul", date = 'gg', filter = 'gg') {
+function getData(action = "default", date = 'g413gg', filter = 'g413gg') {
   $(".tbody").html(`<div class="loading"><img src="../static/src/loading.gif"></div>`);
   if (updateDate == "") {
     updateDate = date;
@@ -81,10 +81,10 @@ function getData(action = "defaul", date = 'gg', filter = 'gg') {
   if (filtersArr.length > 0) {
     filter = filtersArr.join(",");
   } //185.182.185.203
-  $.getJSON(`http://0.0.0.0/get?date=${date}&filter=[${filter}]`, function (data) {
+  $.getJSON(`http://185.182.185.203/get?action=${action}&date=${updateDate}&filter=[${filter}]`, function (data) {
     if (updateDate == data.updateDate && action == "update") {
       $("#toast").show();
-      setTimeout(() => $("#toast").hide(), 2000);
+      setTimeout(() => $("#toast").hide(), 9000);
     }
     updateDate = data.updateDate;
     data = data.currencies;
@@ -130,7 +130,7 @@ updateButton.addEventListener("click", getUpdateData);
 // auto update
 let autoUpdate = false;
 let updateInterval = "";
-const intervalTime = 60000; // 10 cекунд
+const intervalTime = 60000; // 60 cекунд
 const autoUpdateCheckbox = document.querySelector("#auto-update");
 
 autoUpdateCheckbox.addEventListener("change", function () {

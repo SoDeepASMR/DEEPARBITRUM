@@ -14,7 +14,7 @@ class tools:
 		
 		Filtered_data = []
 		for _ in data['currencies']:
-			if not filters:
+			if not filters or 'g413gg' in filters:
 				Filtered_data.append(_)
 
 			if _['exchanges'][0]['name'] in filters or _['exchanges'][1]['name'] in filters:
