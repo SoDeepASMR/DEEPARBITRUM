@@ -1,5 +1,5 @@
 import socket, os, datetime
-from worker.EXCHANGE_PARSER import parser
+from EXCHANGE_PARSER import parser
 import colorlabels as cl
 
 
