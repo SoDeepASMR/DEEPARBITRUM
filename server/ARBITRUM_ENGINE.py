@@ -25,7 +25,7 @@ class ArbitrumEngine:
 			"updateDate": updateDate,
 			"currencies": []
 		}
-		
+
 		size = len(data)
 		for i in range(size):
 			for j in range(size):
@@ -43,7 +43,7 @@ class ArbitrumEngine:
 							arbitrage["currencies"].append(
 								{
 									"currency": pair,
-									"spread": round((a / b - 1) * 100, 3),
+									"spread": str(round((a / b - 1) * 100, 3)) + '%',
 									"exchanges": [
 										{
 											"name": exchanges[i],
@@ -65,7 +65,7 @@ class ArbitrumEngine:
 							arbitrage["currencies"].append(
 								{
 									"currency": pair,
-									"spread": round((b / a - 1) * 100, 3),
+									"spread": str(round((b / a - 1) * 100, 3)) + '%',
 									"exchanges": [
 										{
 											"name": exchanges[j],

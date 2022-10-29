@@ -4,7 +4,7 @@ from threading import Lock
 
 class tools:
 	@staticmethod
-	def filtration(date: str, filters: list) -> json:
+	def filtration(date: str, filters) -> json:
 		lock = Lock()
 		
 		lock.acquire()
