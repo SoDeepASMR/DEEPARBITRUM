@@ -18,8 +18,7 @@ def query_example():
 	
 	dates = [k.replace('.json', '').replace(' ', '.').split('.') for k in [_ for i, j, _ in os.walk('ArbitrumData')][0]]
 	for _ in dates:
-		_.append(
-			time.mktime(datetime.date(int(_[2]), int(_[1]), int(_[0])).timetuple()) + int(_[3]) * 3600 + int(_[4]) * 60)
+		_.append(time.mktime(datetime.date(int(_[2]), int(_[1]), int(_[0])).timetuple()) + int(_[3]) * 3600 + int(_[4]) * 60)
 	
 	dates = sorted(dates, key=lambda k: k[5], reverse=True)[0]
 	
@@ -43,4 +42,4 @@ def query_example():
 	
 	
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(debug=False)

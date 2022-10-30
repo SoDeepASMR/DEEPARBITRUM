@@ -97,7 +97,3 @@ class ExchangeParser:
 			file.write(str(self.data))
 			print(f'{cl.BRIGHT_WHITE}{NowTime()}{cl.BRIGHT_MAGENTA} ' + exchange + ' DONE!')
 			del self.data, options, driver
-
-
-if __name__ == '__main__':
-	parser({}).update_exchanges()

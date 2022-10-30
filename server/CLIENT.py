@@ -72,7 +72,7 @@ def client(ip: str, port: int, links: dict):
 			raw = sock.recv(2900)
 			raw_data = raw
 		
-		if raw.decode() == 'end': break
+		if raw.decode() == 'end': continue
 		
 		sock.send('next'.encode())
 		raw = None
@@ -80,7 +80,9 @@ def client(ip: str, port: int, links: dict):
 			while not raw:
 				raw = sock.recv(2900)
 			
-			if raw.decode() == 'over': break
+			if raw.decode() == 'over':
+				ArbitrumEngine.calculate()
+				break
 			
 			raw_data += raw
 			sock.send('next'.encode())
@@ -95,10 +97,3 @@ def client(ip: str, port: int, links: dict):
 		
 		sock.send('next'.encode())
 		
-	sock.close()
-	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {ip} ЗАКРЫТО')
-
-
-if __name__ == '__main__':
-	PClient().worker()
-	ArbitrumEngine.calculate()

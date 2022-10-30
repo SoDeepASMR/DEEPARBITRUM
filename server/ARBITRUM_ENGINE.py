@@ -87,4 +87,3 @@ class ArbitrumEngine:
 		
 		with open(f'ArbitrumData/{updateDate}.json', 'w+') as file:
 			json.dump(arbitrage, file)
-

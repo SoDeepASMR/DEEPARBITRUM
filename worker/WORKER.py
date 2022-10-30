@@ -1,4 +1,6 @@
 import socket, os, datetime
+import time
+
 from EXCHANGE_PARSER import parser
 import colorlabels as cl
 
@@ -13,33 +15,32 @@ def NowTime():
 
 
 if __name__ == '__main__':
-	if not os.path.isdir('../server/ExchangesData'):
-		os.mkdir('../server/ExchangesData')
+	if not os.path.isdir('ExchangesData'):
+		os.mkdir('ExchangesData')
 		
 	sock = socket.socket()
 	
 	sock.bind(('', 35000))
 	
+	sock.listen(1)
+	
+	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
+	conn, addr = sock.accept()
+	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
+	
+	data = {}
+	raw = None
+	while not raw:
+		raw = conn.recv(32768)
+	exec(f'''data = {raw.decode()}''')
+	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_MAGENTA}ПОЛУЧЕНА DATA')
+	
 	while True:
-		sock.listen(1)
-		
-		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
-		conn, addr = sock.accept()
-		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
-		
-		data = {}
-		raw = None
-		while not raw:
-			raw = conn.recv(32768)
-		exec(f'''data = {raw.decode()}''')
-		print(data)
-		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_MAGENTA}ПОЛУЧЕНА DATA')
-		
 		scan = parser(data)
 		scan.worker()
 		
 		objects = []
-		for (dirpath, dirnames, filenames) in os.walk('../server/ExchangesData'):
+		for (dirpath, dirnames, filenames) in os.walk('ExchangesData'):
 			objects.extend(filenames)
 		
 		response = None
@@ -79,8 +80,4 @@ if __name__ == '__main__':
 				response = None
 		
 		conn.send('end'.encode())
-		conn.close()
-		print(f'{cl.BRIGHT_WHITE}\n{NowTime()} {cl.RED}СОЕДИНЕНИЕ ЗАКРЫТО\n\n')
-	
-	
-			
+		time.sleep(10)
