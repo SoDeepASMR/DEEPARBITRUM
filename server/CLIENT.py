@@ -97,3 +97,6 @@ def client(ip: str, port: int, links: dict):
 		
 		sock.send('next'.encode())
 		
+
+if __name__ == '__main__':
+	PClient().worker()
