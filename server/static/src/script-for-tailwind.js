@@ -26,7 +26,7 @@ function showColumn(value, countRowSpan = 1, borderLeft = 1, borderTop = 1, bord
   } else {
     localContent += `<div class="bg-gray-50 row-span-${countRowSpan} flex justify-center items-center border-r px-2">`;
   }
-  localContent += `<div class="flex justify-center items-center py-2">${value}</div>`;
+  localContent += `<div style="font-size: 20px" class="flex justify-center items-center py-2">${value}</div>`;
   if (countRowSpan == 1) {
     localContent += `<div class="w-full border-b"></div>`;
   }
