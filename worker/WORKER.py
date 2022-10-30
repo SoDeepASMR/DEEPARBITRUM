@@ -20,7 +20,7 @@ if __name__ == '__main__':
 		
 	sock = socket.socket()
 	
-	sock.bind(('', 35000))
+	sock.bind(('', 61252))
 	
 	sock.listen(1)
 	

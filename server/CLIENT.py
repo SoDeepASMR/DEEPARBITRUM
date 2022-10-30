@@ -5,19 +5,18 @@ from ARBITRUM_ENGINE import ArbitrumEngine
 
 
 servers = {
-	'38.242.230.255': 35000,  #
-	'86.48.1.238': 35000,  #
-	'86.48.1.239': 35000,  #
-	'161.97.96.253': 35000,  #
-	'161.97.96.242': 35000,  #
-	'161.97.96.196': 35000,  #
-	'161.97.96.205': 35000,  #
-	'161.97.96.239': 35000,  #
-	'173.249.12.156': 35000,  #
-	'173.249.24.173': 35000,  #
-	'173.249.28.128': 35000,  #
-	'173.249.55.157': 35000,  #
-	'173.249.55.159': 35000  #
+	'38.242.230.255': 61252,  #
+	'86.48.1.238': 61252,  #
+	'86.48.1.239': 61252,  #
+	'161.97.96.253': 61252,  #
+	'161.97.96.242': 61252,  #
+	'161.97.96.196': 61252,  #
+	'161.97.96.205': 61252,  #
+	'161.97.96.239': 61252,  #
+	'173.249.12.156': 61252,  #
+	'173.249.24.173': 61252,  #
+	'173.249.28.128': 61252,  #
+	'173.249.55.157': 61252,  #
 }
 
 
@@ -72,7 +71,9 @@ def client(ip: str, port: int, links: dict):
 			raw = sock.recv(2900)
 			raw_data = raw
 		
-		if raw.decode() == 'end': continue
+		if raw.decode() == 'end':
+			ArbitrumEngine.calculate()
+			continue
 		
 		sock.send('next'.encode())
 		raw = None
@@ -80,9 +81,7 @@ def client(ip: str, port: int, links: dict):
 			while not raw:
 				raw = sock.recv(2900)
 			
-			if raw.decode() == 'over':
-				ArbitrumEngine.calculate()
-				break
+			if raw.decode() == 'over': break
 			
 			raw_data += raw
 			sock.send('next'.encode())
