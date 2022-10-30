@@ -22,20 +22,24 @@ if __name__ == '__main__':
 	
 	sock.bind(('', 61252))
 	
-	sock.listen(1)
-	
-	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
-	conn, addr = sock.accept()
-	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
-	
-	data = {}
-	raw = None
-	while not raw:
-		raw = conn.recv(32768)
-	exec(f'''data = {raw.decode()}''')
-	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_MAGENTA}ПОЛУЧЕНА DATA')
-	
 	while True:
+		sock.listen(1)
+		
+		addr = ()
+		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
+		while True:
+			conn, addr = sock.accept()
+			if '185.182.185.203' in addr: break
+			conn.close()
+		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
+		
+		data = {}
+		raw = None
+		while not raw:
+			raw = conn.recv(32768)
+		exec(f'''data = {raw.decode()}''')
+		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_MAGENTA}ПОЛУЧЕНА DATA')
+		
 		scan = parser(data)
 		scan.worker()
 		
@@ -59,6 +63,7 @@ if __name__ == '__main__':
 						
 						while response != 'next':
 							response = conn.recv(128).decode()
+							time.sleep(0.1)
 						response = None
 						
 						if left <= 0:
@@ -80,4 +85,5 @@ if __name__ == '__main__':
 				response = None
 		
 		conn.send('end'.encode())
+		conn.close()
 		time.sleep(10)

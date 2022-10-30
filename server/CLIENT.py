@@ -41,18 +41,23 @@ class PClient:
 		self.const = math.ceil(self.size / len(servers))  # 13
 	
 	def worker(self):
-		count = 0
-		for ip, port in servers.items():
-			links = {ex: link for ex, link in
-					 self.raw_links[0 + ((self.const * count) % self.size): (self.const * (count + 1)) if (
-							 ((self.const * (count + 1)) + bool(count)) < self.size) else self.size]}
-			proc = mp.Process(target=client, args=(ip, port, links,))
-			self.procs.append(proc)
-			proc.start()
-			count += 1
-		
-		for p in self.procs:
-			p.join()
+		while True:
+			count = 0
+			for ip, port in servers.items():
+				links = {ex: link for ex, link in
+						 self.raw_links[0 + ((self.const * count) % self.size): (self.const * (count + 1)) if (
+								 ((self.const * (count + 1)) + bool(count)) < self.size) else self.size]}
+				proc = mp.Process(target=client, args=(ip, port, links,))
+				self.procs.append(proc)
+				proc.start()
+				count += 1
+			
+			for p in self.procs:
+				p.join()
+			
+			self.procs = []
+			
+			ArbitrumEngine.calculate()
 
 	
 def client(ip: str, port: int, links: dict):
@@ -71,9 +76,7 @@ def client(ip: str, port: int, links: dict):
 			raw = sock.recv(2900)
 			raw_data = raw
 		
-		if raw.decode() == 'end':
-			ArbitrumEngine.calculate()
-			continue
+		if raw.decode() == 'end': break
 		
 		sock.send('next'.encode())
 		raw = None
@@ -96,6 +99,9 @@ def client(ip: str, port: int, links: dict):
 		
 		sock.send('next'.encode())
 		
+	sock.close()
+	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {ip} ЗАКРЫТО')
+
 
 if __name__ == '__main__':
 	PClient().worker()
