@@ -68,40 +68,59 @@ def client(ip: str, port: int, links: dict):
 	
 	sock.send(str(links).encode())
 	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ТАРГЕТЫ ДЛЯ ПАРСИНГА ОТПРАВЛЕНЫ\n')
-	
+
 	while True:
-		raw = None
-		raw_data = None
-		while not raw:
-			raw = sock.recv(2900)
-			raw_data = raw
+		raw = ''
+		while True:
+			try:
+				while len(raw) != 2064:
+					raw += sock.recv(1032).decode()
+					time.sleep(0.5)
+				raw = raw.split('::')
+				
+				if raw[0].isdigit():
+					size = int(raw[0])
+					name = raw[1]
+					raw_data = raw[2].rstrip('0')
+					break
+			except Exception:
+				print('--------------------\n\n', raw, '\n\n--------------------')
 		
-		if raw.decode() == 'end': break
+		raw = ''
+		left = size - 2064
+		if left <= 0:
+			left = 0
 		
-		sock.send('next'.encode())
-		raw = None
-		while raw != 'over':
-			while not raw:
-				raw = sock.recv(2900)
-			
-			if raw.decode() == 'over': break
-			
-			raw_data += raw
-			sock.send('next'.encode())
-			raw = None
+		time.sleep(2)
+		
+		while left != 0:
+			if left > 2064:
+				left -= 2064
+				while len(raw) != 2064:
+					raw += sock.recv(1032).decode()
+					time.sleep(0.5)
+				raw_data += raw
+				raw = ''
+			else:
+				while len(raw) != 2064:
+					raw += sock.recv(1032).decode()
+					time.sleep(0.5)
+				raw_data += raw
+				raw = ''
+				left = 0
+		
+		data = eval(raw_data.replace(r'\u273a', '').replace('\u273a', '').rstrip('0'))
+		with open(f'ExchangesData/{name.replace("|", "")}', 'w+') as file:
+			file.write(str(data))
+			print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_GREEN}КОТИРОВКИ {name} СОХРАНЕНЫ\n\n')
+		
+		response = sock.recv(4).decode()
+		if response == 'next': continue
+		if response == 'end!': break
 	
-		raw_data = raw_data.decode().split('::')
-		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.GREEN}ПОЛУЧЕНЫ КОТИРОВКИ {raw_data[0]}')
-		
-		with open(f'ExchangesData/{raw_data[0].replace("|", "")}', 'w+') as file:
-			file.write(raw_data[1].replace(r'\u273a', '').replace('\u273a', ''))
-			print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_GREEN}КОТИРОВКИ {raw_data[0]} СОХРАНЕНЫ\n\n')
-		
-		sock.send('next'.encode())
-		
 	sock.close()
 	print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {ip} ЗАКРЫТО')
-
-
+	
+	
 if __name__ == '__main__':
 	PClient().worker()

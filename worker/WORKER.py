@@ -1,11 +1,23 @@
-import socket, os, datetime
-import time
-
+import socket, os, datetime, time
 from EXCHANGE_PARSER import parser
 import colorlabels as cl
 
 
-def NowTime():
+def sizing5(text: str) -> str:
+	while len(text) < 5:
+		text = '0' + text
+	
+	return text
+
+
+def sizing2064(text: str) -> str:
+	if len(text) < 2064:
+		text += '0' * (2064 - len(text))
+	
+	return text
+
+
+def NowTime() -> str:
 	return f'{datetime.datetime.now().day}.' \
 		   f'{datetime.datetime.now().month}.' \
 		   f'{datetime.datetime.now().year} ' \
@@ -17,73 +29,73 @@ def NowTime():
 if __name__ == '__main__':
 	if not os.path.isdir('ExchangesData'):
 		os.mkdir('ExchangesData')
-		
+	
 	sock = socket.socket()
 	
 	sock.bind(('', 61252))
 	
-	while True:
-		sock.listen(1)
-		
-		addr = ()
-		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
-		while True:
-			conn, addr = sock.accept()
-			if '185.182.185.203' in addr: break
-			conn.close()
-		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
-		
-		data = {}
-		raw = None
-		while not raw:
-			raw = conn.recv(32768)
-		exec(f'''data = {raw.decode()}''')
-		print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_MAGENTA}ПОЛУЧЕНА DATA')
-		
-		scan = parser(data)
-		scan.worker()
-		
-		objects = []
-		for (dirpath, dirnames, filenames) in os.walk('ExchangesData'):
-			objects.extend(filenames)
-		
-		response = None
-		for obj in objects:
-			with open(f'ExchangesData/{obj}', 'r', encoding='utf-8') as file:
-				packet = (obj + '::' + file.read().strip('\n')).encode()
-				size = len(packet)
-				left = size
+	def main():
+		try:
+			while True:
+				sock.listen(1)
 				
-				count = 0  # [0 + ((2000 * count) % size): (2000 * (count + 1)) if (((2000 * (count + 1)) + bool(count)) < size) else size]
-				if size > 2900:
-					while True:
-						conn.send(packet[0 + ((2900 * count) % size): (2900 * (count + 1)) if (((2900 * (count + 1)) + bool(count)) < size) else size])
-						count += 1
-						left -= 2900
-						
-						while response != 'next':
-							response = conn.recv(128).decode()
-							time.sleep(0.1)
-						response = None
-						
-						if left <= 0:
-							conn.send('over'.encode())
-							break
-				else:
-					conn.send(packet)
+				print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
+				conn, addr = sock.accept()
+				# while True:
+				# 	conn, addr = sock.accept()
+				# 	if '185.182.185.203' in addr: break
+				# 	conn.close()
+				print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
+				
+				raw = None
+				while not raw:
+					raw = conn.recv(2064)
+				data = eval(raw.decode())
+				print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_MAGENTA}ПОЛУЧЕНА DATA')
+				
+				scan = parser(data)
+				scan.worker()
+				
+				objects = []
+				for (_, _, filenames) in os.walk('ExchangesData'):
+					objects.extend(filenames)
 					
-					while response != 'next':
-						response = conn.recv(128).decode()
-					response = None
+				for obj in objects:
+					with open(f'ExchangesData/{obj}', 'r') as file:
+						packet = '::' + obj + '::' + file.read().strip('\n')
+						intsize = len(packet) + 5
+						size = sizing5(str(intsize))
+						packet = size + packet
+						
+						left = intsize
+						count = 0
+						if intsize > 2064:
+							while True:
+								if left == 0: break
+								
+								minipacket = packet[0 + ((2064 * count) % intsize): (2064 * (count + 1)) if (((2064 * (count + 1)) + bool(count)) < intsize) else intsize]
+								
+								if len(minipacket) < 2064:
+									conn.send(sizing2064(minipacket).encode())
+									left = 0
+									
+								else:
+									conn.send(minipacket.encode())
+									count += 1
+									left -= 2064
+						
+						else:
+							conn.send(sizing2064(packet).encode())
+						
+						print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.GREEN}ОТПРАВЛЕНЫ КОТИРОВКИ {obj}')
 					
-					conn.send('over'.encode())
+					if objects.index(obj) == len(objects) - 1: conn.send('end!'.encode())
+					else: conn.send('next'.encode())
 				
-				print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.GREEN}ОТПРАВЛЕНЫ КОТИРОВКИ {obj}')
+				conn.close()
+				print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ {addr} ЗАКРЫТО\n\n')
+				time.sleep(10)
 				
-				while response != 'next':
-					response = conn.recv(128).decode()
-				response = None
-		
-		conn.send('end'.encode())
-		conn.close()
-		time.sleep(10)
+		except Exception: main()
+
+	main()

@@ -29,6 +29,6 @@ class tools:
 	
 	@staticmethod
 	def sorting(data: list) -> list:
-		return sorted(data, key=lambda k: float(k['spread']), reverse=True)
+		return sorted(data, key=lambda k: float(k['spread'].replace('%', '')), reverse=True)
 		
 		
