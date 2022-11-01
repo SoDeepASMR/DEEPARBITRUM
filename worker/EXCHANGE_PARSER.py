@@ -118,6 +118,3 @@ class ExchangeParser:
 			file.write(str(self.data))
 			print(f'{cl.BRIGHT_WHITE}{NowTime()}{cl.BRIGHT_MAGENTA} ' + exchange + ' DONE!')
 			del self.data, options, driver
-
-
-ExchangeParser().parse(exchange='Huobi Global', link='https://coinmarketcap.com/en/exchanges/huobi-global/?type=spot')
