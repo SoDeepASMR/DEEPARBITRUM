@@ -17,7 +17,7 @@ class tools:
 			if not filters or 'g413gg' in filters:
 				Filtered_data.append(_)
 
-			if _['exchanges'][0]['name'] in filters or _['exchanges'][1]['name'] in filters:
+			if _['exchanges'][0]['name'].lower() in filters or _['exchanges'][1]['name'] in filters:
 				Filtered_data.append(_)
 		
 		data['currencies'] = Filtered_data
