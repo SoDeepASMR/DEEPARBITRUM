@@ -17,7 +17,7 @@ def NowTime():
 
 
 class parser:
-	def __init__(self, links):
+	def __init__(self, links: dict):
 		self.procs = []
 		self.links = links
 		
@@ -48,14 +48,6 @@ class parser:
 		# driver.find_element(By.XPATH, '/html/body/div[1]/div/div[1]/div[2]/div/div/div[3]').click()
 		
 		links = {
-			'Curve Finance': 		'https://coinmarketcap.com/en/exchanges/curve-finance/?type=spot',
-			'Uniswap (V2)': 		'https://coinmarketcap.com/en/exchanges/uniswap-v2/?type=spot',
-			'DODO (Ethereum)': 		'https://coinmarketcap.com/en/exchanges/dodo/?type=spot',
-			'PancakeSwap (V2)': 	'https://coinmarketcap.com/en/exchanges/pancakeswap-v2/?type=spot',
-			'iZiSwap': 				'https://coinmarketcap.com/en/exchanges/iziswap/?type=spot',
-			'KLAYswap': 			'https://coinmarketcap.com/en/exchanges/klayswap/?type=spot',
-			'SushiSwap': 			'https://coinmarketcap.com/en/exchanges/sushiswap/?type=spot',
-			'Sun.io': 				'https://coinmarketcap.com/en/exchanges/justswap/?type=spot',
 			'Binance': 				'https://coinmarketcap.com/en/exchanges/binance/?type=spot',
 			'Bybit': 				'https://coinmarketcap.com/en/exchanges/bybit/?type=spot',
 			'KuCoin': 				'https://coinmarketcap.com/en/exchanges/kucoin/?type=spot',
@@ -74,7 +66,15 @@ class parser:
 			'Crypto.com Exchange': 	'https://coinmarketcap.com/en/exchanges/crypto-com-exchange/?type=spot',
 			'Bitstamp': 			'https://coinmarketcap.com/en/exchanges/bitstamp/?type=spot',
 			'BKEX': 				'https://coinmarketcap.com/en/exchanges/bkex/?type=spot',
-			'Blockchain.com': 		'https://coinmarketcap.com/en/exchanges/blockchain-com-exchange/?type=spot'
+			'Blockchain.com': 		'https://coinmarketcap.com/en/exchanges/blockchain-com-exchange/?type=spot',
+			'Curve Finance': 		'https://coinmarketcap.com/en/exchanges/curve-finance/?type=spot',
+			'Uniswap (V2)': 		'https://coinmarketcap.com/en/exchanges/uniswap-v2/?type=spot',
+			'DODO (Ethereum)': 		'https://coinmarketcap.com/en/exchanges/dodo/?type=spot',
+			'PancakeSwap (V2)': 	'https://coinmarketcap.com/en/exchanges/pancakeswap-v2/?type=spot',
+			'iZiSwap': 				'https://coinmarketcap.com/en/exchanges/iziswap/?type=spot',
+			'KLAYswap': 			'https://coinmarketcap.com/en/exchanges/klayswap/?type=spot',
+			'SushiSwap': 			'https://coinmarketcap.com/en/exchanges/sushiswap/?type=spot',
+			'Sun.io': 				'https://coinmarketcap.com/en/exchanges/justswap/?type=spot'
 		}
 		
 		with open('exchanges', 'wb+') as file:
@@ -88,33 +88,44 @@ class ExchangeParser:
 	
 	def parse(self, exchange: str, link: str):
 		options = webdriver.ChromeOptions()
-		# options.add_argument('--headless')
+		options.add_argument('--headless')
 		options.add_argument('--no-sandbox')
 		options.add_argument('--ignore-certificate-errors-spki-list')
 		options.add_experimental_option('excludeSwitches', ['enable-logging'])
 		caps = DesiredCapabilities().CHROME
 		caps["pageLoadStrategy"] = "eager"
-		driver = webdriver.Chrome('worker/chromedriver.exe', chrome_options=options, service_log_path=None, desired_capabilities=caps)
+		driver = webdriver.Chrome('./chromedriver', chrome_options=options, service_log_path=None, desired_capabilities=caps)
 		
+		flag = False
+		count = 0
 		while not self.data:
 			driver.get(link)
 			try:
 				while True:
+					if count == 10:
+						flag = True
+						break
+					
 					time.sleep(1)
 					button = driver.find_element(By.XPATH, '//*[@id="__next"]/div/div[1]/div[2]/div/div[3]/div[3]/button')
 					webdriver.ActionChains(driver).scroll_to_element(button)
 					button.send_keys(Keys.PAGE_DOWN)
 					button.click()
+					count += 1
 			
 			except Exception:
 				self.data = [_.text.split('\n') for _ in driver.find_elements(By.TAG_NAME, 'tr')[1:]]
+			
+			if flag:
+				self.data = [_.text.split('\n') for _ in driver.find_elements(By.TAG_NAME, 'tr')[1:]]
+				break
 			
 		driver.close()
 		
 		self.data = [[_[2], _[3], _[6], _[7]] for _ in self.data]
 		self.data = {Pair: {'Price': Price, 'Volume': Volume, 'Liq': Liq} for Pair, Price, Volume, Liq in self.data}
 		
-		with open(f'worker/ExchangesData/{exchange}', 'w+') as file:
+		with open(f'ExchangesData/{exchange}', 'w+') as file:
 			file.write(str(self.data))
 			print(f'{cl.BRIGHT_WHITE}{NowTime()}{cl.BRIGHT_MAGENTA} ' + exchange + ' DONE!')
 			del self.data, options, driver

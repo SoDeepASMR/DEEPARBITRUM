@@ -17,6 +17,7 @@ servers = {
 	'173.249.24.173': 61252,  #
 	'173.249.28.128': 61252,  #
 	'173.249.55.157': 61252,  #
+	'38.242.253.4': 61252
 }
 
 
@@ -38,7 +39,7 @@ class PClient:
 		
 		self.size = len(self.raw_links)
 		
-		self.const = math.ceil(self.size / len(servers))  # 13
+		self.const = round(self.size / len(servers))  # 13
 	
 	def worker(self):
 		while True:
