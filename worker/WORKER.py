@@ -40,11 +40,10 @@ if __name__ == '__main__':
 				sock.listen(1)
 				
 				print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
-				conn, addr = sock.accept()
-				# while True:
-				# 	conn, addr = sock.accept()
-				# 	if '185.182.185.203' in addr: break
-				# 	conn.close()
+				while True:
+					conn, addr = sock.accept()
+					if '185.182.185.203' in addr: break
+					conn.close()
 				print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
 				
 				raw = None

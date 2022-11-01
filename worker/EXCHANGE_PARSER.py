@@ -1,8 +1,10 @@
 import time, pickle, datetime
+import colorlabels as cl
+import multiprocessing as mp
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import multiprocessing as mp
-import colorlabels as cl
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 def NowTime():
@@ -32,41 +34,50 @@ class parser:
 	
 	@staticmethod
 	def update_exchanges():
-		options = webdriver.ChromeOptions()
-		options.add_argument('--headless')
-		options.add_argument('--no-sandbox')
-		driver = webdriver.Chrome('./chromedriver', chrome_options=options)
+		# options = webdriver.ChromeOptions()
+		# options.add_argument('--headless')
+		# options.add_argument('--no-sandbox')
+		# driver = webdriver.Chrome('./chromedriver', chrome_options=options)
+		#
+		# driver.get('https://coinmarketcap.com/en/rankings/exchanges/')
+		#
+		# driver.execute_script('window.scrollTo(0, 5000)')
+		#
+		# time.sleep(1)
+		#
+		# driver.find_element(By.XPATH, '/html/body/div[1]/div/div[1]/div[2]/div/div/div[3]').click()
 		
-		driver.get('https://coinmarketcap.com/en/rankings/exchanges/')
+		links = {
+			'Curve Finance': 		'https://coinmarketcap.com/en/exchanges/curve-finance/?type=spot',
+			'Uniswap (V2)': 		'https://coinmarketcap.com/en/exchanges/uniswap-v2/?type=spot',
+			'DODO (Ethereum)': 		'https://coinmarketcap.com/en/exchanges/dodo/?type=spot',
+			'PancakeSwap (V2)': 	'https://coinmarketcap.com/en/exchanges/pancakeswap-v2/?type=spot',
+			'iZiSwap': 				'https://coinmarketcap.com/en/exchanges/iziswap/?type=spot',
+			'KLAYswap': 			'https://coinmarketcap.com/en/exchanges/klayswap/?type=spot',
+			'SushiSwap': 			'https://coinmarketcap.com/en/exchanges/sushiswap/?type=spot',
+			'Sun.io': 				'https://coinmarketcap.com/en/exchanges/justswap/?type=spot',
+			'Binance': 				'https://coinmarketcap.com/en/exchanges/binance/?type=spot',
+			'Bybit': 				'https://coinmarketcap.com/en/exchanges/bybit/?type=spot',
+			'KuCoin': 				'https://coinmarketcap.com/en/exchanges/kucoin/?type=spot',
+			'OKX': 					'https://coinmarketcap.com/en/exchanges/okx/?type=spot',
+			'Huobi Global': 		'https://coinmarketcap.com/en/exchanges/huobi-global/?type=spot',
+			'FTX': 					'https://coinmarketcap.com/en/exchanges/ftx/?type=spot',
+			'Gate.io': 				'https://coinmarketcap.com/en/exchanges/gate-io/?type=spot',
+			'EXMO': 				'https://coinmarketcap.com/en/exchanges/exmo/?type=spot',
+			'BitForex': 			'https://coinmarketcap.com/en/exchanges/bitforex/?type=spot',
+			'Bitfinex': 			'https://coinmarketcap.com/en/exchanges/bitfinex/?type=spot',
+			'Poloniex': 			'https://coinmarketcap.com/en/exchanges/poloniex/?type=spot',
+			'ProBit Global': 		'https://coinmarketcap.com/en/exchanges/probit-exchange/?type=spot',
+			'Coinbase Exchange': 	'https://coinmarketcap.com/en/exchanges/coinbase-exchange/?type=spot',
+			'Korbit': 				'https://coinmarketcap.com/en/exchanges/korbit/?type=spot',
+			'Upbit': 				'https://coinmarketcap.com/en/exchanges/upbit/?type=spot',
+			'Crypto.com Exchange': 	'https://coinmarketcap.com/en/exchanges/crypto-com-exchange/?type=spot',
+			'Bitstamp': 			'https://coinmarketcap.com/en/exchanges/bitstamp/?type=spot',
+			'BKEX': 				'https://coinmarketcap.com/en/exchanges/bkex/?type=spot',
+			'Blockchain.com': 		'https://coinmarketcap.com/en/exchanges/blockchain-com-exchange/?type=spot'
+		}
 		
-		driver.execute_script('window.scrollTo(0, 5000)')
-		
-		time.sleep(1)
-		
-		driver.find_element(By.XPATH, '/html/body/div[1]/div/div[1]/div[2]/div/div/div[3]').click()
-		
-		time.sleep(1)
-		
-		links = [[_.text, _.get_attribute('href')] for _ in driver.find_elements(By.TAG_NAME, 'a')[1:171] if
-				 _.get_attribute('href') is not None and 'https://coinmarketcap.com/exchanges/' in _.get_attribute(
-					 'href')]
-		links = [[ex, link[0:25] + '/en' + link[25:] + '?type=spot'] for [ex, link] in links]
-		links = {ex: link for ex, link in links}
-		
-		links.update({
-			'Curve Finance': 'https://coinmarketcap.com/en/exchanges/curve-finance/?type=spot',
-			'Uniswap (V2)': 'https://coinmarketcap.com/en/exchanges/uniswap-v2/?type=spot',
-			'DODO (Ethereum)': 'https://coinmarketcap.com/en/exchanges/dodo/?type=spot',
-			'PancakeSwap (V2)': 'https://coinmarketcap.com/en/exchanges/pancakeswap-v2/?type=spot',
-			'iZiSwap': 'https://coinmarketcap.com/en/exchanges/iziswap/?type=spot',
-			'KLAYswap': 'https://coinmarketcap.com/en/exchanges/klayswap/?type=spot',
-			'SushiSwap': 'https://coinmarketcap.com/en/exchanges/sushiswap/?type=spot',
-			'Sun.io': 'https://coinmarketcap.com/en/exchanges/justswap/?type=spot'
-		})
-		
-		driver.close()
-		
-		with open('../server/exchanges', 'wb+') as file:
+		with open('exchanges', 'wb+') as file:
 			pickle.dump(links, file)
 
 
@@ -77,23 +88,36 @@ class ExchangeParser:
 	
 	def parse(self, exchange: str, link: str):
 		options = webdriver.ChromeOptions()
-		options.add_argument('--headless')
+		# options.add_argument('--headless')
 		options.add_argument('--no-sandbox')
 		options.add_argument('--ignore-certificate-errors-spki-list')
 		options.add_experimental_option('excludeSwitches', ['enable-logging'])
-		driver = webdriver.Chrome('./chromedriver', chrome_options=options, service_log_path=None)
+		caps = DesiredCapabilities().CHROME
+		caps["pageLoadStrategy"] = "eager"
+		driver = webdriver.Chrome('worker/chromedriver.exe', chrome_options=options, service_log_path=None, desired_capabilities=caps)
 		
 		while not self.data:
 			driver.get(link)
+			try:
+				while True:
+					time.sleep(1)
+					button = driver.find_element(By.XPATH, '//*[@id="__next"]/div/div[1]/div[2]/div/div[3]/div[3]/button')
+					webdriver.ActionChains(driver).scroll_to_element(button)
+					button.send_keys(Keys.PAGE_DOWN)
+					button.click()
 			
-			self.data = [_.text.split('\n') for _ in driver.find_elements(By.TAG_NAME, 'tr')[1:]]
+			except Exception:
+				self.data = [_.text.split('\n') for _ in driver.find_elements(By.TAG_NAME, 'tr')[1:]]
 			
 		driver.close()
 		
 		self.data = [[_[2], _[3], _[6], _[7]] for _ in self.data]
 		self.data = {Pair: {'Price': Price, 'Volume': Volume, 'Liq': Liq} for Pair, Price, Volume, Liq in self.data}
 		
-		with open(f'ExchangesData/{exchange}', 'w+') as file:
+		with open(f'worker/ExchangesData/{exchange}', 'w+') as file:
 			file.write(str(self.data))
 			print(f'{cl.BRIGHT_WHITE}{NowTime()}{cl.BRIGHT_MAGENTA} ' + exchange + ' DONE!')
 			del self.data, options, driver
+
+
+ExchangeParser().parse(exchange='Huobi Global', link='https://coinmarketcap.com/en/exchanges/huobi-global/?type=spot')
