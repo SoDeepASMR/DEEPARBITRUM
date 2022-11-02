@@ -39,7 +39,7 @@ class ArbitrumEngine:
 						a = float(data[i][pair]['Price'].replace('$', '').replace(',', '').replace('*', '').strip(' '))
 						b = float(data[j][pair]['Price'].replace('$', '').replace(',', '').replace('*', '').strip(' '))
 						
-						if a > b and (a / b - 1) * 100 >= 1:
+						if a > b and 100 < (a / b - 1) * 100 >= 1:
 							arbitrage["currencies"].append(
 								{
 									"currency": pair,
