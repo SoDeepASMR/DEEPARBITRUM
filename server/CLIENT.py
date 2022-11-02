@@ -74,43 +74,43 @@ def client(ip: str, port: int, links: dict):
 		raw = ''
 		while True:
 			try:
-				while len(raw) != 2064:
-					raw += sock.recv(1032).decode()
-					time.sleep(0.5)
+				while len(raw) != 2800:
+					raw += sock.recv(700).decode()
+					time.sleep(0.25)
 				raw = raw.split('::')
 				
 				if raw[0].isdigit():
 					size = int(raw[0])
 					name = raw[1]
-					raw_data = raw[2].rstrip('0')
+					raw_data = raw[2].rstrip('&')
 					break
 			except Exception:
 				print('--------------------\n\n', raw, '\n\n--------------------')
 		
 		raw = ''
-		left = size - 2064
+		left = size - 2300
 		if left <= 0:
 			left = 0
 		
 		time.sleep(2)
 		
 		while left != 0:
-			if left > 2064:
-				left -= 2064
-				while len(raw) != 2064:
-					raw += sock.recv(1032).decode()
-					time.sleep(0.5)
-				raw_data += raw
+			if left > 2300:
+				left -= 2300
+				while len(raw) != 2800:
+					raw += sock.recv(700).decode()
+					time.sleep(0.25)
+				raw_data += raw.rstrip('&')
 				raw = ''
 			else:
-				while len(raw) != 2064:
-					raw += sock.recv(1032).decode()
-					time.sleep(0.5)
-				raw_data += raw
+				while len(raw) != 2800:
+					raw += sock.recv(700).decode()
+					time.sleep(0.25)
+				raw_data += raw.rstrip('&')
 				raw = ''
 				left = 0
 		
-		data = eval(raw_data.replace(r'\u273a', '').replace('\u273a', '').rstrip('0'))
+		data = eval(raw_data.replace(r'\u273a', '').replace('\u273a', '').rstrip('&'))
 		with open(f'ExchangesData/{name.replace("|", "")}', 'w+') as file:
 			file.write(str(data))
 			print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_GREEN}КОТИРОВКИ {name} СОХРАНЕНЫ\n\n')

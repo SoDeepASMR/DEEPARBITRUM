@@ -68,7 +68,6 @@ class parser:
 			'BKEX': 				'https://coinmarketcap.com/en/exchanges/bkex/?type=spot',
 			'Blockchain.com': 		'https://coinmarketcap.com/en/exchanges/blockchain-com-exchange/?type=spot',
 			'Curve Finance': 		'https://coinmarketcap.com/en/exchanges/curve-finance/?type=spot',
-			'Uniswap (V2)': 		'https://coinmarketcap.com/en/exchanges/uniswap-v2/?type=spot',
 			'DODO (Ethereum)': 		'https://coinmarketcap.com/en/exchanges/dodo/?type=spot',
 			'PancakeSwap (V2)': 	'https://coinmarketcap.com/en/exchanges/pancakeswap-v2/?type=spot',
 			'iZiSwap': 				'https://coinmarketcap.com/en/exchanges/iziswap/?type=spot',

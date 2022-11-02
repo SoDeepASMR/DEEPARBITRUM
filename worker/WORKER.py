@@ -10,9 +10,9 @@ def sizing5(text: str) -> str:
 	return text
 
 
-def sizing2064(text: str) -> str:
-	if len(text) < 2064:
-		text += '0' * (2064 - len(text))
+def sizing2800(text: str) -> str:
+	if len(text) < 2800:
+		text += '&' * (2800 - len(text))
 	
 	return text
 
@@ -40,10 +40,11 @@ if __name__ == '__main__':
 				sock.listen(1)
 				
 				print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ОЖИДАНИЕ ПОДКЛЮЧЕНИЯ')
-				while True:
-					conn, addr = sock.accept()
-					if '185.182.185.203' in addr: break
-					conn.close()
+				conn, addr = sock.accept()
+				# while True:
+				# 	conn, addr = sock.accept()
+				# 	if '185.182.185.203' in addr: break
+				# 	conn.close()
 				print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {addr} УСТАНОВЛЕНО')
 				
 				raw = None
@@ -68,23 +69,29 @@ if __name__ == '__main__':
 						
 						left = intsize
 						count = 0
-						if intsize > 2064:
+						if intsize > 2300:
 							while True:
 								if left == 0: break
 								
-								minipacket = packet[0 + ((2064 * count) % intsize): (2064 * (count + 1)) if (((2064 * (count + 1)) + bool(count)) < intsize) else intsize]
+								minipacket = packet[0 + ((2300 * count) % intsize): (2300 * (count + 1)) if (((2300 * (count + 1)) + bool(count)) < intsize) else intsize]
 								
-								if len(minipacket) < 2064:
-									conn.send(sizing2064(minipacket).encode())
+								if len(minipacket) < 2300:
+									minipacket = sizing2800(minipacket)
+									conn.send(minipacket.encode())
 									left = 0
+									time.sleep(0.5)
 									
 								else:
+									minipacket = sizing2800(minipacket)
 									conn.send(minipacket.encode())
 									count += 1
-									left -= 2064
+									left -= 2300
+									time.sleep(0.5)
 						
 						else:
-							conn.send(sizing2064(packet).encode())
+							packet = sizing2800(packet)
+							conn.send(packet.encode())
+							time.sleep(0.5)
 						
 						print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.GREEN}ОТПРАВЛЕНЫ КОТИРОВКИ {obj}')
 					
