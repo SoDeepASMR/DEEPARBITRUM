@@ -49,7 +49,6 @@ class parser:
 
         links = {
             'Binance': 'https://coinmarketcap.com/en/exchanges/binance/?type=spot',
-            'PancakeSwap (V2)': 'https://coinmarketcap.com/en/exchanges/pancakeswap-v2/?type=spot',
             'Bybit': 'https://coinmarketcap.com/en/exchanges/bybit/?type=spot',
             'KuCoin': 'https://coinmarketcap.com/en/exchanges/kucoin/?type=spot',
             'OKX': 'https://coinmarketcap.com/en/exchanges/okx/?type=spot',
@@ -65,6 +64,7 @@ class parser:
             'Korbit': 'https://coinmarketcap.com/en/exchanges/korbit/?type=spot',
             'Upbit': 'https://coinmarketcap.com/en/exchanges/upbit/?type=spot',
             'Crypto.com Exchange': 'https://coinmarketcap.com/en/exchanges/crypto-com-exchange/?type=spot',
+            'PancakeSwap (V2)': 'https://coinmarketcap.com/en/exchanges/pancakeswap-v2/?type=spot',
             'Bitstamp': 'https://coinmarketcap.com/en/exchanges/bitstamp/?type=spot',
             'BKEX': 'https://coinmarketcap.com/en/exchanges/bkex/?type=spot',
             'Blockchain.com': 'https://coinmarketcap.com/en/exchanges/blockchain-com-exchange/?type=spot',
@@ -127,7 +127,7 @@ class ExchangeParser:
         self.data = [[_[2], _[3], _[6], _[7]] for _ in self.data]
         self.data = {Pair: {'Price': Price, 'Volume': Volume, 'Liq': Liq} for Pair, Price, Volume, Liq in self.data}
 
-        with open(f'ExchangesData/{exchange}', 'w+') as file:
-            file.write(str(self.data))
+        with open(f'ExchangesData/{exchange}', 'w+', encoding='utf-8') as file:
+            file.write(str(self.data).replace('´', '').replace('Đ', 'D'))
             print(f'{cl.BRIGHT_WHITE}{NowTime()}{cl.BRIGHT_MAGENTA} ' + exchange + ' DONE!')
             del self.data, options, driver

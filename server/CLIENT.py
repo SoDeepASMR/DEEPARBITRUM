@@ -16,7 +16,6 @@ servers = {
     '173.249.24.173': 61252,  #
     '173.249.28.128': 61252,  #
     '173.249.55.157': 61252,  #
-    # '38.242.253.4': 61252  #
 }
 
 
@@ -66,7 +65,7 @@ def client(ip: str, port: int, links: dict):
     sock.connect((ip, port))
     print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ С {ip}:{port} УСТАНОВЛЕНО')
 
-    sock.send(str(links).encode())
+    sock.send(str(links).encode(encoding='utf-8'))
     print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.YELLOW}ТАРГЕТЫ ДЛЯ ПАРСИНГА ОТПРАВЛЕНЫ\n')
 
     while True:
@@ -74,7 +73,7 @@ def client(ip: str, port: int, links: dict):
         while True:
             try:
                 while len(raw) != 2800:
-                    raw += sock.recv(700).decode()
+                    raw += sock.recv(700).decode(encoding='utf-8')
                     time.sleep(0.25)
                 raw = raw.split('::')
 
@@ -97,13 +96,13 @@ def client(ip: str, port: int, links: dict):
             if left > 2300:
                 left -= 2300
                 while len(raw) != 2800:
-                    raw += sock.recv(700).decode()
+                    raw += sock.recv(700).decode(encoding='utf-8')
                     time.sleep(0.25)
                 raw_data += raw.rstrip('&')
                 raw = ''
             else:
                 while len(raw) != 2800:
-                    raw += sock.recv(700).decode()
+                    raw += sock.recv(700).decode(encoding='utf-8')
                     time.sleep(0.25)
                 raw_data += raw.rstrip('&')
                 raw = ''
@@ -114,7 +113,7 @@ def client(ip: str, port: int, links: dict):
             file.write(str(data))
             print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_GREEN}КОТИРОВКИ {name} СОХРАНЕНЫ\n\n')
 
-        response = sock.recv(4).decode()
+        response = sock.recv(4).decode(encoding='utf-8')
         if response == 'next': continue
         if response == 'end!': break
 

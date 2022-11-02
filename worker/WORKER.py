@@ -50,7 +50,7 @@ if __name__ == '__main__':
                 raw = None
                 while not raw:
                     raw = conn.recv(2064)
-                data = eval(raw.decode())
+                data = eval(raw.decode(encoding='utf-8'))
                 print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.BRIGHT_MAGENTA}ПОЛУЧЕНА DATA')
 
                 scan = parser(data)
@@ -78,36 +78,35 @@ if __name__ == '__main__':
 
                                 if len(minipacket) < 2300:
                                     minipacket = sizing2800(minipacket)
-                                    conn.send(minipacket.encode())
+                                    conn.send(minipacket.encode(encoding='utf-8'))
                                     left = 0
                                     time.sleep(0.5)
 
                                 else:
                                     minipacket = sizing2800(minipacket)
-                                    conn.send(minipacket.encode())
+                                    conn.send(minipacket.encode(encoding='utf-8'))
                                     count += 1
                                     left -= 2300
                                     time.sleep(0.5)
 
                         else:
                             packet = sizing2800(packet)
-                            conn.send(packet.encode())
+                            conn.send(packet.encode(encoding='utf-8'))
                             time.sleep(0.5)
 
                         print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.GREEN}ОТПРАВЛЕНЫ КОТИРОВКИ {obj}')
 
                     if objects.index(obj) == len(objects) - 1:
-                        conn.send('end!'.encode())
+                        conn.send('end!'.encode(encoding='utf-8'))
                     else:
-                        conn.send('next'.encode())
+                        conn.send('next'.encode(encoding='utf-8'))
 
                 conn.close()
                 print(f'{cl.BRIGHT_WHITE}{NowTime()} {cl.RED}СОЕДИНЕНИЕ {addr} ЗАКРЫТО\n\n')
                 time.sleep(10)
 
         except Exception:
-            print(Exception.__annotations__)
+            print(Exception.__context__)
             main()
-
 
     main()
