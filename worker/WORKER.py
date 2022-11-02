@@ -106,6 +106,7 @@ if __name__ == '__main__':
                 time.sleep(10)
 
         except Exception:
+            print(Exception.__annotations__)
             main()
 
 
