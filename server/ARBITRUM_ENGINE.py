@@ -36,10 +36,10 @@ class ArbitrumEngine:
 					if pair in data[j].keys():
 						if '*' in data[i][pair]['Price'] or '*' in data[j][pair]['Price']: continue
 						
-						a = float(data[i][pair]['Price'].replace('$', '').replace(',', '').replace('*', '').strip())
-						b = float(data[j][pair]['Price'].replace('$', '').replace(',', '').replace('*', '').strip())
+						a = float(data[i][pair]['Price'].replace('$', '').replace(',', '').replace('*', '').strip(' '))
+						b = float(data[j][pair]['Price'].replace('$', '').replace(',', '').replace('*', '').strip(' '))
 						
-						if a > b and (a / b - 1) * 100 > 1.5:
+						if a > b and (a / b - 1) * 100 >= 1:
 							arbitrage["currencies"].append(
 								{
 									"currency": pair,
