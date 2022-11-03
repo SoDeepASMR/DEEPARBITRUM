@@ -40,7 +40,7 @@ class ArbitrumEngine:
 						a = float(data[i][pair]['Price'].replace('$', '').replace(',', '').replace('*', '').strip(' ').replace('<', ''))
 						b = float(data[j][pair]['Price'].replace('$', '').replace(',', '').replace('*', '').strip(' ').replace('<', ''))
 						
-						if a > b and 15 > (a / b - 1) * 100 >= 1 and int(data[i][pair]['Liq']) > 100 and int(data[j][pair]['Liq']) > 100 and [pair, exchanges[i], exchanges[j]] not in selected_pairs:
+						if a > b and 10 > (a / b - 1) * 100 >= 1 and float(data[i][pair]['Liq'].replace(' ', '').replace(',', '')) > 100 and float(data[j][pair]['Liq'].replace(' ', '').replace(',', '')) > 100 and [pair, exchanges[i], exchanges[j]] not in selected_pairs:
 							selected_pairs.append([pair, exchanges[i], exchanges[j]])
 							arbitrage["currencies"].append(
 								{
@@ -63,7 +63,7 @@ class ArbitrumEngine:
 								}
 							)
 						
-						elif a < b and 15 > (b / a - 1) * 100 >= 1 and int(data[i][pair]['Liq']) > 100 and int(data[j][pair]['Liq']) > 100 and pair not in selected_pairs:
+						elif a < b and 10 > (b / a - 1) * 100 >= 1 and float(data[i][pair]['Liq'].replace(' ', '').replace(',', '')) > 100 and float(data[j][pair]['Liq'].replace(' ', '').replace(',', '')) > 100 and [pair, exchanges[j], exchanges[i]] not in selected_pairs:
 							selected_pairs.append([pair, exchanges[j], exchanges[i]])
 							arbitrage["currencies"].append(
 								{
